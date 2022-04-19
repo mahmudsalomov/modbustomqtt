@@ -1,0 +1,6 @@
+@import url('./main-layout.css');
+@import url('./views/modbus-client-view.css');
+@import url('./views/modbus-item-view.css');
+@import url('./views/mqtt-client-view.css');
+@import url('./views/history-one-item-view.css');
+@import url('line-awesome/dist/line-awesome/css/line-awesome.min.css');
