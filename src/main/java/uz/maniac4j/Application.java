@@ -8,6 +8,7 @@ import com.vaadin.flow.theme.lumo.Lumo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * The entry point of the Spring Boot application.
@@ -20,6 +21,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 @Theme(value = "modbustomqtt", variant = Lumo.DARK)
 @PWA(name = "ModbusToMqtt", shortName = "ModbusToMqtt", offlineResources = {})
 @NpmPackage(value = "line-awesome", version = "1.3.0")
+@EnableScheduling
 public class Application extends SpringBootServletInitializer implements AppShellConfigurator {
 
     public static void main(String[] args) {

@@ -37,7 +37,7 @@ public class ModbusItemView extends Div implements BeforeEnterObserver {
 
     private Grid<ModbusItem> grid = new Grid<>(ModbusItem.class, false);
 
-    private TextField tagname;
+    private TextField tagName;
     private TextField register;
     private TextField type;
     private TextField address;
@@ -65,7 +65,7 @@ public class ModbusItemView extends Div implements BeforeEnterObserver {
         add(splitLayout);
 
         // Configure Grid
-        grid.addColumn("tagname").setAutoWidth(true);
+        grid.addColumn("tagName").setAutoWidth(true);
         grid.addColumn("register").setAutoWidth(true);
         grid.addColumn("type").setAutoWidth(true);
         grid.addColumn("address").setAutoWidth(true);
@@ -144,11 +144,11 @@ public class ModbusItemView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
-        tagname = new TextField("Tagname");
+        tagName = new TextField("TagName");
         register = new TextField("Register");
         type = new TextField("Type");
         address = new TextField("Address");
-        Component[] fields = new Component[]{tagname, register, type, address};
+        Component[] fields = new Component[]{tagName, register, type, address};
 
         formLayout.add(fields);
         editorDiv.add(formLayout);

@@ -77,6 +77,32 @@
     </dependencyManagement>
 
     <dependencies>
+
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/com.iteaj/iot-modbus &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>com.iteaj</groupId>-->
+<!--            <artifactId>iot-modbus</artifactId>-->
+<!--            <version>2.4.1</version>-->
+<!--        </dependency>-->
+
+        <dependency>
+            <groupId>io.moquette</groupId>
+            <artifactId>moquette-broker</artifactId>
+            <version>0.15</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-mqtt</artifactId>
+            <version>5.5.10</version>
+        </dependency>
+
         <dependency>
             <groupId>com.vaadin</groupId>
             <!-- Replace artifactId with vaadin-core to use only free components -->

@@ -1,20 +1,29 @@
 package uz.maniac4j.data.entity;
 
-import javax.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class ModbusItem extends AbstractEntity {
 
-    private String tagname;
+    private String tagName;
     private String register;
     private String type;
     private Integer address;
 
-    public String getTagname() {
-        return tagname;
+    @ManyToOne
+    private ModbusClient modbusClient;
+
+    public String getTagName() {
+        return tagName;
     }
-    public void setTagname(String tagname) {
-        this.tagname = tagname;
+    public void setTagName(String tagName) {
+        this.tagName = tagName;
     }
     public String getRegister() {
         return register;
@@ -35,4 +44,11 @@ public class ModbusItem extends AbstractEntity {
         this.address = address;
     }
 
+    public ModbusClient getModbusClient() {
+        return modbusClient;
+    }
+
+    public void setModbusClient(ModbusClient modbusClient) {
+        this.modbusClient = modbusClient;
+    }
 }
