@@ -2,9 +2,15 @@ package uz.maniac4j.data.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import uz.maniac4j.data.enums.RegisterType;
+import uz.maniac4j.data.enums.RegisterVarType;
+import uz.maniac4j.modbus.exceptions.ModbusStormException;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
+import java.io.IOException;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,8 +18,12 @@ import javax.persistence.ManyToOne;
 public class ModbusItem extends AbstractEntity {
 
     private String tagName;
-    private String register;
-    private String type;
+
+    @Enumerated(EnumType.STRING)
+    private RegisterType register;
+
+    @Enumerated(EnumType.STRING)
+    private RegisterVarType type;
     private Integer address;
 
     @ManyToOne
@@ -26,16 +36,16 @@ public class ModbusItem extends AbstractEntity {
         this.tagName = tagName;
     }
     public String getRegister() {
-        return register;
+        return register!=null?register.name():"";
     }
     public void setRegister(String register) {
-        this.register = register;
+        this.register=RegisterType.valueOf(register);
     }
     public String getType() {
-        return type;
+        return type!=null?type.name():"";
     }
     public void setType(String type) {
-        this.type = type;
+        this.type=RegisterVarType.valueOf(type);
     }
     public Integer getAddress() {
         return address;
@@ -51,4 +61,54 @@ public class ModbusItem extends AbstractEntity {
     public void setModbusClient(ModbusClient modbusClient) {
         this.modbusClient = modbusClient;
     }
+
+    public boolean validCheck(){
+        return tagName != null && !tagName.isEmpty() && register != null && type != null && address>=0 && address<65536;
+    }
+
+    public String getValue() {
+
+        if (modbusClient==null) return "error";
+
+        try {
+            ModbusClient connect = modbusClient.Connect();
+            int[] ints=new int[2];
+            switch (register){
+                case INPUT -> {
+                    ints = connect.getClient().ReadInputRegisters(address, 2);
+                }
+                case HOLDING -> {
+                    ints = connect.getClient().ReadHoldingRegisters(address, 2);
+                }
+            }
+
+            switch (type){
+                case INT16 -> {
+                    return String.valueOf(ints[0]);
+                }
+                case INT32 -> {
+                    int rebuilt32 = (ints[0] << 16) | (ints[1] & 0xFFFF);
+                    System.out.println(rebuilt32);
+                    return String.valueOf(rebuilt32);
+                }
+//                    case FLOAT16 -> {}
+                case FLOAT32 -> {
+                    return String.valueOf(uz.maniac4j.modbus.client.ModbusClient.ConvertRegistersToFloat(ints, uz.maniac4j.modbus.client.ModbusClient.RegisterOrder.HighLow));
+                }
+            }
+
+            return "0";
+        }catch (Exception e){
+            return "error";
+        }
+
+
+
+    }
+
+
+
+
+
+
 }

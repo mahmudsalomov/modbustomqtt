@@ -1,6 +1,7 @@
 package uz.maniac4j.data.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class MqttClient extends AbstractEntity {
@@ -12,6 +13,10 @@ public class MqttClient extends AbstractEntity {
     private Integer port;
     private String topic;
     private boolean enable;
+
+
+    @ManyToOne
+    private ModbusClient modbusClient;
 
     public String getName() {
         return name;
@@ -54,6 +59,14 @@ public class MqttClient extends AbstractEntity {
     }
     public void setEnable(boolean enable) {
         this.enable = enable;
+    }
+
+    public ModbusClient getModbusClient() {
+        return modbusClient;
+    }
+
+    public void setModbusClient(ModbusClient modbusClient) {
+        this.modbusClient = modbusClient;
     }
 
 }

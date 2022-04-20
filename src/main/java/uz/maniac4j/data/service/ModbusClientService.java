@@ -1,5 +1,6 @@
 package uz.maniac4j.data.service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,10 @@ public class ModbusClientService {
 
     public Page<ModbusClient> list(Pageable pageable) {
         return repository.findAll(pageable);
+    }
+
+    public List<ModbusClient> all(){
+        return repository.findAll();
     }
 
     public int count() {

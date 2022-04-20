@@ -12,6 +12,7 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -32,7 +33,7 @@ import org.springframework.data.domain.PageRequest;
 import uz.maniac4j.data.entity.ModbusClient;
 import uz.maniac4j.data.service.ModbusClientService;
 import uz.maniac4j.views.MainLayout;
-
+//@org.springframework.stereotype.Component
 @PageTitle("Modbus Client")
 @Route(value = "Modbus-Client/:modbusClientID?/:action?(edit)", layout = MainLayout.class)
 @RouteAlias(value = "", layout = MainLayout.class)
@@ -62,6 +63,13 @@ public class ModbusClientView extends Div implements BeforeEnterObserver {
 
     @Autowired
     public ModbusClientView(ModbusClientService modbusClientService) {
+
+//        name.setRequired(true);
+//        ip.setRequired(true);
+//        port.setRequired(true);
+//        polling.setRequired(true);
+//        slaveId.setRequired(true);
+
         this.modbusClientService = modbusClientService;
         addClassNames("modbus-client-view");
 
@@ -127,11 +135,17 @@ public class ModbusClientView extends Div implements BeforeEnterObserver {
                 }
                 binder.writeBean(this.modbusClient);
 
-                modbusClientService.update(this.modbusClient);
-                clearForm();
-                refreshGrid();
-                Notification.show("ModbusClient details stored.");
-                UI.getCurrent().navigate(ModbusClientView.class);
+                if (modbusClient.validCheck()){
+                    modbusClientService.update(this.modbusClient);
+                    clearForm();
+                    refreshGrid();
+                    Notification.show("ModbusClient details stored.");
+                    UI.getCurrent().navigate(ModbusClientView.class);
+                }
+                else {
+                    Notification.show("Fill in the fields!").addThemeVariants(NotificationVariant.LUMO_ERROR);
+                }
+
             } catch (ValidationException validationException) {
                 Notification.show("An exception happened while trying to store the modbusClient details.");
             }

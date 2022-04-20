@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import uz.maniac4j.data.entity.ModbusClient;
 import uz.maniac4j.data.entity.ModbusItem;
 
 @Service
@@ -32,6 +33,10 @@ public class ModbusItemService {
 
     public Page<ModbusItem> list(Pageable pageable) {
         return repository.findAll(pageable);
+    }
+
+    public Page<ModbusItem> list(Pageable pageable, ModbusClient client) {
+        return repository.findAllByModbusClient(pageable,client);
     }
 
     public int count() {

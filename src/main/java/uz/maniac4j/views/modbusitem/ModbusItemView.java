@@ -1,5 +1,6 @@
 package uz.maniac4j.views.modbusitem;
 
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -8,8 +9,12 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
@@ -20,13 +25,20 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import uz.maniac4j.data.entity.ModbusClient;
 import uz.maniac4j.data.entity.ModbusItem;
+import uz.maniac4j.data.enums.RegisterType;
+import uz.maniac4j.data.enums.RegisterVarType;
+import uz.maniac4j.data.service.ModbusClientService;
 import uz.maniac4j.data.service.ModbusItemService;
 import uz.maniac4j.views.MainLayout;
+import uz.maniac4j.views.modbusclient.ModbusClientView;
 
 @PageTitle("Modbus Item")
 @Route(value = "Modbus-Item/:modbusItemID?/:action?(edit)", layout = MainLayout.class)
@@ -38,9 +50,11 @@ public class ModbusItemView extends Div implements BeforeEnterObserver {
     private Grid<ModbusItem> grid = new Grid<>(ModbusItem.class, false);
 
     private TextField tagName;
-    private TextField register;
-    private TextField type;
+    private Select<String> register;
+    private Select<String> type;
     private TextField address;
+
+    private H1 title=new H1("No select");
 
     private Button cancel = new Button("Cancel");
     private Button save = new Button("Save");
@@ -49,11 +63,16 @@ public class ModbusItemView extends Div implements BeforeEnterObserver {
 
     private ModbusItem modbusItem;
 
+    private ModbusClient selectedModbusClient;
+
     private final ModbusItemService modbusItemService;
+    private final ModbusClientService modbusClientService;
 
     @Autowired
-    public ModbusItemView(ModbusItemService modbusItemService) {
+    public ModbusItemView(ModbusItemService modbusItemService, ModbusClientService modbusClientService) {
         this.modbusItemService = modbusItemService;
+        this.modbusClientService = modbusClientService;
+        add(select());
         addClassNames("modbus-item-view");
 
         // Create UI
@@ -69,8 +88,9 @@ public class ModbusItemView extends Div implements BeforeEnterObserver {
         grid.addColumn("register").setAutoWidth(true);
         grid.addColumn("type").setAutoWidth(true);
         grid.addColumn("address").setAutoWidth(true);
+        grid.addColumn("value").setAutoWidth(true);
         grid.setItems(query -> modbusItemService.list(
-                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
+                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)),selectedModbusClient)
                 .stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
@@ -105,11 +125,31 @@ public class ModbusItemView extends Div implements BeforeEnterObserver {
                 }
                 binder.writeBean(this.modbusItem);
 
-                modbusItemService.update(this.modbusItem);
-                clearForm();
-                refreshGrid();
-                Notification.show("ModbusItem details stored.");
-                UI.getCurrent().navigate(ModbusItemView.class);
+
+                if (selectedModbusClient==null){
+                    Notification.show("Please select modbus client!").addThemeVariants(NotificationVariant.LUMO_ERROR);
+                } else {
+                    if (this.modbusItem.validCheck()){
+                        this.modbusItem.setModbusClient(selectedModbusClient);
+                        modbusItemService.update(this.modbusItem);
+                        clearForm();
+                        refreshGrid();
+                        Notification.show("ModbusItem details stored.");
+                        UI.getCurrent().navigate(ModbusItemView.class);
+                    }
+                    else {
+                        Notification.show("Fill in the fields!").addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    }
+                }
+
+
+
+//
+//                modbusItemService.update(this.modbusItem);
+//                clearForm();
+//                refreshGrid();
+//                Notification.show("ModbusItem details stored.");
+//                UI.getCurrent().navigate(ModbusItemView.class);
             } catch (ValidationException validationException) {
                 Notification.show("An exception happened while trying to store the modbusItem details.");
             }
@@ -143,10 +183,23 @@ public class ModbusItemView extends Div implements BeforeEnterObserver {
         editorDiv.setClassName("editor");
         editorLayoutDiv.add(editorDiv);
 
+        register = new Select<>();
+        register.setItems(RegisterType.names());
+        register.setLabel("Register");
+        register.setPlaceholder("Select size");
+
+        register.addValueChangeListener(this::changeType);
+
+
+        type = new Select<>();
+        type.setItems(RegisterVarType.names());
+        type.setLabel("Type");
+        type.setPlaceholder("Select type");
+
         FormLayout formLayout = new FormLayout();
         tagName = new TextField("TagName");
-        register = new TextField("Register");
-        type = new TextField("Type");
+//        register = new TextField("Register");
+//        type = new TextField("Type");
         address = new TextField("Address");
         Component[] fields = new Component[]{tagName, register, type, address};
 
@@ -155,6 +208,10 @@ public class ModbusItemView extends Div implements BeforeEnterObserver {
         createButtonLayout(editorLayoutDiv);
 
         splitLayout.addToSecondary(editorLayoutDiv);
+    }
+
+    private void changeType(AbstractField.ComponentValueChangeEvent<Select<String>, String> e) {
+
     }
 
     private void createButtonLayout(Div editorLayoutDiv) {
@@ -187,4 +244,47 @@ public class ModbusItemView extends Div implements BeforeEnterObserver {
         binder.readBean(this.modbusItem);
 
     }
+
+
+
+
+    //Modbus client select
+    public HorizontalLayout select(){
+
+        Button refresh=new Button("Refresh");
+        refresh.addClickListener(event -> refreshGrid());
+
+        List<ModbusClient> all = modbusClientService.all();
+        Select<ModbusClient> select = new Select<>();
+        select.setLabel("Select Modbus client");
+
+        select.setItemLabelGenerator(ModbusClient::getName);
+
+        select.setItems(all);
+        select.addValueChangeListener(e->{
+            ModbusClient value = e.getValue();
+            System.out.println(value);
+            selectedModbusClient=value;
+            title.setText(selectedModbusClient.getName());
+            refreshGrid();
+        });
+
+
+
+
+//        select.setItems("Most recent first", "Rating: high to low",
+//                "Rating: low to high", "Price: high to low", "Price: low to high");
+//        select.setValue("Most recent first");
+
+        HorizontalLayout layout = new HorizontalLayout();
+        layout.setAlignItems(FlexComponent.Alignment.CENTER);
+
+        layout.add(refresh,select);
+        layout.add(new HorizontalLayout(title));
+
+
+        return layout;
+    }
+
+
 }
