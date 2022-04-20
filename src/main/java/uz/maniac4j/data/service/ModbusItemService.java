@@ -14,9 +14,12 @@ public class ModbusItemService {
 
     private final ModbusItemRepository repository;
 
+    private final ModbusClientRepository modbusClientRepository;
+
     @Autowired
-    public ModbusItemService(ModbusItemRepository repository) {
+    public ModbusItemService(ModbusItemRepository repository, ModbusClientRepository modbusClientRepository) {
         this.repository = repository;
+        this.modbusClientRepository = modbusClientRepository;
     }
 
     public Optional<ModbusItem> get(UUID id) {
@@ -24,7 +27,10 @@ public class ModbusItemService {
     }
 
     public ModbusItem update(ModbusItem entity) {
-        return repository.save(entity);
+        ModbusItem save = repository.save(entity);
+        save.getModbusClient().getItems().add(save);
+        modbusClientRepository.save(save.getModbusClient());
+        return save;
     }
 
     public void delete(UUID id) {
@@ -36,6 +42,8 @@ public class ModbusItemService {
     }
 
     public Page<ModbusItem> list(Pageable pageable, ModbusClient client) {
+        Page<ModbusItem> all = repository.findAllByModbusClient(pageable,client);
+        System.out.println(all.getContent());
         return repository.findAllByModbusClient(pageable,client);
     }
 

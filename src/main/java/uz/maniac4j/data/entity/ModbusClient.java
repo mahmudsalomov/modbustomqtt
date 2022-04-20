@@ -1,12 +1,13 @@
 package uz.maniac4j.data.entity;
 
 import lombok.ToString;
+import org.apache.http.conn.util.InetAddressUtils;
 import uz.maniac4j.modbus.server.ModbusServer;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.util.HashSet;
+import java.util.Set;
 
 @ToString
 @Entity
@@ -24,6 +25,11 @@ public class ModbusClient extends AbstractEntity {
 //    @NotEmpty
     private Integer slaveId;
     private boolean enable;
+
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private Set<ModbusItem> items=new HashSet<>();
 
     @Transient
     private uz.maniac4j.modbus.client.ModbusClient client=new uz.maniac4j.modbus.client.ModbusClient();
@@ -65,9 +71,27 @@ public class ModbusClient extends AbstractEntity {
         this.enable = enable;
     }
 
+    public Set<ModbusItem> getItems() {
+        return items;
+    }
+
+    public void setItems(Set<ModbusItem> items) {
+        this.items = items;
+    }
 
     public boolean validCheck(){
-        return name != null && !name.isEmpty() && ip != null && !ip.isEmpty() && port != null && port>0&&port<65535 && polling != null && polling>=100&&polling<=100000 && slaveId != null;
+        return name != null &&
+                !name.isEmpty() &&
+                ip != null &&
+                !ip.isEmpty() &&
+                InetAddressUtils.isIPv4Address(ip) &&
+                port != null &&
+                port>0 &&
+                port<65535 &&
+                polling != null &&
+                polling>=100 &&
+                polling<=100000 &&
+                slaveId != null;
     }
 
 
@@ -81,7 +105,7 @@ public class ModbusClient extends AbstractEntity {
 
     public ModbusClient Connect(){
         try {
-            System.out.println(ModbusServer.getAllStackTraces());
+//            System.out.println(ModbusServer.getAllStackTraces());
             client.setPort(port);
             client.setConnectionTimeout(polling);
             client.setIpAddress(ip);
@@ -94,5 +118,6 @@ public class ModbusClient extends AbstractEntity {
         }
 
     }
+
 
 }

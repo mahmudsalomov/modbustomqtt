@@ -32,6 +32,8 @@ public class ModbusClientService {
     }
 
     public Page<ModbusClient> list(Pageable pageable) {
+        Page<ModbusClient> all = repository.findAll(pageable);
+        System.out.println(all.getContent());
         return repository.findAll(pageable);
     }
 

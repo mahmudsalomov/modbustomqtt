@@ -123,23 +123,30 @@ public class ModbusItemView extends Div implements BeforeEnterObserver {
                 if (this.modbusItem == null) {
                     this.modbusItem = new ModbusItem();
                 }
-                binder.writeBean(this.modbusItem);
 
 
                 if (selectedModbusClient==null){
                     Notification.show("Please select modbus client!").addThemeVariants(NotificationVariant.LUMO_ERROR);
                 } else {
-                    if (this.modbusItem.validCheck()){
-                        this.modbusItem.setModbusClient(selectedModbusClient);
-                        modbusItemService.update(this.modbusItem);
-                        clearForm();
-                        refreshGrid();
-                        Notification.show("ModbusItem details stored.");
-                        UI.getCurrent().navigate(ModbusItemView.class);
+                    binder.writeBean(this.modbusItem);
+                    try {
+                        if (this.modbusItem.validCheck()){
+                            this.modbusItem.setModbusClient(selectedModbusClient);
+                            modbusItemService.update(this.modbusItem);
+                            clearForm();
+                            refreshGrid();
+                            Notification.show("ModbusItem details stored.");
+                            UI.getCurrent().navigate(ModbusItemView.class);
+                        }
+                        else {
+                            Notification.show("Fill in the fields!").addThemeVariants(NotificationVariant.LUMO_ERROR);
+                        }
+                    }catch (Exception q){
+//                        q.printStackTrace();
+                        Notification.show("Error!").addThemeVariants(NotificationVariant.LUMO_ERROR);
                     }
-                    else {
-                        Notification.show("Fill in the fields!").addThemeVariants(NotificationVariant.LUMO_ERROR);
-                    }
+
+
                 }
 
 

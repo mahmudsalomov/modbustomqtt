@@ -1,13 +1,19 @@
 package uz.maniac4j.data.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import org.apache.http.conn.util.InetAddressUtils;
 
+import javax.persistence.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"modbus_client_id", "name"})})
 @Entity
 public class MqttClient extends AbstractEntity {
 
+
     private String name;
-    private String modbus;
+//    private String modbus;
     private Integer polling;
     private String ip;
     private Integer port;
@@ -25,10 +31,10 @@ public class MqttClient extends AbstractEntity {
         this.name = name;
     }
     public String getModbus() {
-        return modbus;
+        return modbusClient!=null?modbusClient.getName():"";
     }
     public void setModbus(String modbus) {
-        this.modbus = modbus;
+//        this.modbus = modbus;
     }
     public Integer getPolling() {
         return polling;
@@ -68,5 +74,39 @@ public class MqttClient extends AbstractEntity {
     public void setModbusClient(ModbusClient modbusClient) {
         this.modbusClient = modbusClient;
     }
+
+
+    public boolean validCheck(){
+        return name != null &&
+                !name.isEmpty() &&
+                ip != null &&
+                !ip.isEmpty() &&
+                InetAddressUtils.isIPv4Address(ip) &&
+                topic != null &&
+                !topic.isEmpty() &&
+                port != null &&
+                port>0 &&
+                port<65535 &&
+                polling != null &&
+                polling>=100 &&
+                polling<=10000;
+    }
+
+
+
+    public Map<String,String> getJson(){
+        Map<String,String> map=new HashMap<>();
+        Set<ModbusItem> items = modbusClient.getItems();
+        System.out.println("SET");
+        System.out.println(modbusClient);
+        System.out.println(items.size());
+        for (ModbusItem item : items) {
+            System.out.println(item);
+            map.put(item.getTagName(),item.getValue());
+        }
+        return map;
+    }
+
+
 
 }

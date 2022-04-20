@@ -10,9 +10,13 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
@@ -24,11 +28,15 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import uz.maniac4j.data.entity.ModbusClient;
 import uz.maniac4j.data.entity.MqttClient;
+import uz.maniac4j.data.service.ModbusClientService;
 import uz.maniac4j.data.service.MqttClientService;
 import uz.maniac4j.views.MainLayout;
 
@@ -43,7 +51,7 @@ public class MqttClientView extends Div implements BeforeEnterObserver {
     private Grid<MqttClient> grid = new Grid<>(MqttClient.class, false);
 
     private TextField name;
-    private TextField modbus;
+//    private TextField modbus;
     private TextField polling;
     private TextField ip;
     private TextField port;
@@ -53,15 +61,24 @@ public class MqttClientView extends Div implements BeforeEnterObserver {
     private Button cancel = new Button("Cancel");
     private Button save = new Button("Save");
 
+    private H1 title=new H1("No select");
+
     private BeanValidationBinder<MqttClient> binder;
 
     private MqttClient mqttClient;
 
+    private ModbusClient selectedModbusClient;
+
+
     private final MqttClientService mqttClientService;
+    private final ModbusClientService modbusClientService;
+
 
     @Autowired
-    public MqttClientView(MqttClientService mqttClientService) {
+    public MqttClientView(MqttClientService mqttClientService, ModbusClientService modbusClientService) {
         this.mqttClientService = mqttClientService;
+        this.modbusClientService = modbusClientService;
+        add(select());
         addClassNames("mqtt-client-view");
 
         // Create UI
@@ -74,11 +91,12 @@ public class MqttClientView extends Div implements BeforeEnterObserver {
 
         // Configure Grid
         grid.addColumn("name").setAutoWidth(true);
-        grid.addColumn("modbus").setAutoWidth(true);
+//        grid.addColumn("modbus").setAutoWidth(true);
         grid.addColumn("polling").setAutoWidth(true);
         grid.addColumn("ip").setAutoWidth(true);
         grid.addColumn("port").setAutoWidth(true);
         grid.addColumn("topic").setAutoWidth(true);
+        grid.addColumn("json").setAutoWidth(true);
         LitRenderer<MqttClient> enableRenderer = LitRenderer.<MqttClient>of(
                 "<vaadin-icon icon='vaadin:${item.icon}' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: ${item.color};'></vaadin-icon>")
                 .withProperty("icon", enable -> enable.isEnable() ? "check" : "minus").withProperty("color",
@@ -89,7 +107,7 @@ public class MqttClientView extends Div implements BeforeEnterObserver {
         grid.addColumn(enableRenderer).setHeader("Enable").setAutoWidth(true);
 
         grid.setItems(query -> mqttClientService.list(
-                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
+                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)),selectedModbusClient)
                 .stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
@@ -123,13 +141,30 @@ public class MqttClientView extends Div implements BeforeEnterObserver {
                 if (this.mqttClient == null) {
                     this.mqttClient = new MqttClient();
                 }
-                binder.writeBean(this.mqttClient);
 
-                mqttClientService.update(this.mqttClient);
-                clearForm();
-                refreshGrid();
-                Notification.show("MqttClient details stored.");
-                UI.getCurrent().navigate(MqttClientView.class);
+                if (selectedModbusClient==null){
+                    Notification.show("Please select modbus client!").addThemeVariants(NotificationVariant.LUMO_ERROR);
+                } else {
+                    binder.writeBean(this.mqttClient);
+
+                    try {
+                        if (this.mqttClient.validCheck()){
+                            this.mqttClient.setModbusClient(selectedModbusClient);
+                            mqttClientService.update(this.mqttClient);
+                            clearForm();
+                            refreshGrid();
+                            Notification.show("MqttClient details stored.");
+                            UI.getCurrent().navigate(MqttClientView.class);
+                        }else {
+                            Notification.show("Fill in the fields!").addThemeVariants(NotificationVariant.LUMO_ERROR);
+                        }
+                    }catch (Exception q){
+                        Notification.show("Error!").addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    }
+
+                }
+
+
             } catch (ValidationException validationException) {
                 Notification.show("An exception happened while trying to store the mqttClient details.");
             }
@@ -165,13 +200,13 @@ public class MqttClientView extends Div implements BeforeEnterObserver {
 
         FormLayout formLayout = new FormLayout();
         name = new TextField("Name");
-        modbus = new TextField("Modbus");
+//        modbus = new TextField("Modbus");
         polling = new TextField("Polling");
         ip = new TextField("Ip");
         port = new TextField("Port");
         topic = new TextField("Topic");
         enable = new Checkbox("Enable");
-        Component[] fields = new Component[]{name, modbus, polling, ip, port, topic, enable};
+        Component[] fields = new Component[]{name, polling, ip, port, topic, enable};
 
         formLayout.add(fields);
         editorDiv.add(formLayout);
@@ -209,5 +244,50 @@ public class MqttClientView extends Div implements BeforeEnterObserver {
         this.mqttClient = value;
         binder.readBean(this.mqttClient);
 
+    }
+
+
+
+
+
+
+
+
+    //Modbus client select
+    public HorizontalLayout select(){
+
+        Button refresh=new Button("Refresh");
+        refresh.addClickListener(event -> refreshGrid());
+
+        List<ModbusClient> all = modbusClientService.all();
+        Select<ModbusClient> select = new Select<>();
+        select.setLabel("Select Modbus client");
+
+        select.setItemLabelGenerator(ModbusClient::getName);
+
+        select.setItems(all);
+        select.addValueChangeListener(e->{
+            ModbusClient value = e.getValue();
+            System.out.println(value);
+            selectedModbusClient=value;
+            title.setText(selectedModbusClient.getName());
+            refreshGrid();
+        });
+
+
+
+
+//        select.setItems("Most recent first", "Rating: high to low",
+//                "Rating: low to high", "Price: high to low", "Price: low to high");
+//        select.setValue("Most recent first");
+
+        HorizontalLayout layout = new HorizontalLayout();
+        layout.setAlignItems(FlexComponent.Alignment.CENTER);
+
+        layout.add(refresh,select);
+        layout.add(new HorizontalLayout(title));
+
+
+        return layout;
     }
 }

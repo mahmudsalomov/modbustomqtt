@@ -2,19 +2,19 @@ package uz.maniac4j.data.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import uz.maniac4j.data.enums.RegisterType;
 import uz.maniac4j.data.enums.RegisterVarType;
 import uz.maniac4j.modbus.exceptions.ModbusStormException;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.io.IOException;
 
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"modbus_client_id", "address"})})
 public class ModbusItem extends AbstractEntity {
 
     private String tagName;
@@ -27,6 +27,7 @@ public class ModbusItem extends AbstractEntity {
     private Integer address;
 
     @ManyToOne
+    @JoinColumn(name = "modbus_client_id")
     private ModbusClient modbusClient;
 
     public String getTagName() {
@@ -63,13 +64,14 @@ public class ModbusItem extends AbstractEntity {
     }
 
     public boolean validCheck(){
-        return tagName != null && !tagName.isEmpty() && register != null && type != null && address>=0 && address<65536;
+        return tagName != null && !tagName.isEmpty() && register != null && type != null && address!=null && address>=0 && address<65536;
     }
+
 
     public String getValue() {
 
         if (modbusClient==null) return "error";
-
+        if (!modbusClient.isEnable()) return "Client switch off";
         try {
             ModbusClient connect = modbusClient.Connect();
             int[] ints=new int[2];
@@ -101,6 +103,7 @@ public class ModbusItem extends AbstractEntity {
         }catch (Exception e){
             return "error";
         }
+
 
 
 
