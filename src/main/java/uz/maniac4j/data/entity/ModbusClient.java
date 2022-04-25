@@ -2,8 +2,6 @@ package uz.maniac4j.data.entity;
 
 import lombok.ToString;
 import org.apache.http.conn.util.InetAddressUtils;
-import uz.maniac4j.modbus.server.ModbusServer;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.util.HashSet;
@@ -32,7 +30,7 @@ public class ModbusClient extends AbstractEntity {
     private Set<ModbusItem> items=new HashSet<>();
 
     @Transient
-    private uz.maniac4j.modbus.client.ModbusClient client=new uz.maniac4j.modbus.client.ModbusClient();
+    private uz.maniac4j.storm.modbus.client.ModbusClient client=new uz.maniac4j.storm.modbus.client.ModbusClient();
 
     public String getName() {
         return name;
@@ -95,11 +93,11 @@ public class ModbusClient extends AbstractEntity {
     }
 
 
-    public uz.maniac4j.modbus.client.ModbusClient getClient() {
+    public uz.maniac4j.storm.modbus.client.ModbusClient getClient() {
         return client;
     }
 
-    public void setClient(uz.maniac4j.modbus.client.ModbusClient client) {
+    public void setClient(uz.maniac4j.storm.modbus.client.ModbusClient client) {
         this.client = client;
     }
 

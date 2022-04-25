@@ -6,7 +6,6 @@ import lombok.ToString;
 import uz.maniac4j.data.enums.ErrorResponse;
 import uz.maniac4j.data.enums.RegisterType;
 import uz.maniac4j.data.enums.RegisterVarType;
-import uz.maniac4j.modbus.exceptions.ModbusStormException;
 
 import javax.persistence.*;
 import java.io.IOException;
@@ -96,7 +95,7 @@ public class ModbusItem extends AbstractEntity {
                 }
 //                    case FLOAT16 -> {}
                 case FLOAT32 -> {
-                    return String.valueOf(uz.maniac4j.modbus.client.ModbusClient.ConvertRegistersToFloat(ints, uz.maniac4j.modbus.client.ModbusClient.RegisterOrder.HighLow));
+                    return String.valueOf(uz.maniac4j.storm.modbus.client.ModbusClient.ConvertRegistersToFloat(ints, uz.maniac4j.storm.modbus.client.ModbusClient.RegisterOrder.HighLow));
                 }
             }
 

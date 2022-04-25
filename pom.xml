@@ -207,6 +207,16 @@
             <version>5.0.3</version>
             <scope>test</scope>
         </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>uz.maniac4j</groupId>-->
+<!--            <artifactId>storm</artifactId>-->
+<!--            <scope>system</scope>-->
+<!--            <version>1.0</version>-->
+<!--            <systemPath>src/main/java/uz/maniac4j/lib/ModbusStorm.jar</systemPath>-->
+<!--        </dependency>-->
+
+
     </dependencies>
 
     <build>

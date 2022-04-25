@@ -77,7 +77,7 @@ public class MqttClientService {
 //                        | JsonProcessingException
                         e
                 ) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
             }
 
@@ -94,11 +94,11 @@ public class MqttClientService {
     public Map<String,String> getJson(MqttClient client){
         Map<String,String> map=new HashMap<>();
         Set<ModbusItem> items = client.getModbusClient().getItems();
-        System.out.println("SET");
-        System.out.println(client.getModbusClient());
-        System.out.println(items.size());
+//        System.out.println("SET");
+//        System.out.println(client.getModbusClient());
+//        System.out.println(items.size());
         for (ModbusItem item : items) {
-            System.out.println(item);
+//            System.out.println(item);
             String value = item.getValue();
             itemLogRepository.save(ItemLog.builder().value(ErrorResponse.check(value)).modbusItem(item).build());
             map.put(item.getTagName(),value);
