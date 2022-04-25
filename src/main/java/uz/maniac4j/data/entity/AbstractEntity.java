@@ -1,24 +1,31 @@
 package uz.maniac4j.data.entity;
 
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.sql.Timestamp;
 import java.util.UUID;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 
 @MappedSuperclass
 public abstract class AbstractEntity {
 
     @Id
     @GeneratedValue
-    private UUID id;
+    private Long id;
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
+
+
+    @OrderBy
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private Timestamp createdAt;
 
     @Override
     public int hashCode() {

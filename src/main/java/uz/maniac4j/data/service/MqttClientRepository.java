@@ -9,6 +9,6 @@ import uz.maniac4j.data.entity.ModbusClient;
 import uz.maniac4j.data.entity.ModbusItem;
 import uz.maniac4j.data.entity.MqttClient;
 
-public interface MqttClientRepository extends JpaRepository<MqttClient, UUID> {
+public interface MqttClientRepository extends JpaRepository<MqttClient, Long> {
     Page<MqttClient> findAllByModbusClient(Pageable pg, ModbusClient client);
 }

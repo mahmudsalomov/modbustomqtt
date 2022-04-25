@@ -31,7 +31,7 @@ import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+import java.lang.Long;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import uz.maniac4j.data.entity.ModbusClient;
@@ -174,7 +174,7 @@ public class MqttClientView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<UUID> mqttClientId = event.getRouteParameters().get(MQTTCLIENT_ID).map(UUID::fromString);
+        Optional<Long> mqttClientId = event.getRouteParameters().get(MQTTCLIENT_ID).map(Long::valueOf);
         if (mqttClientId.isPresent()) {
             Optional<MqttClient> mqttClientFromBackend = mqttClientService.get(mqttClientId.get());
             if (mqttClientFromBackend.isPresent()) {

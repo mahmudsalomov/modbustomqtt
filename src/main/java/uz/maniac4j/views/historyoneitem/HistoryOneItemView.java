@@ -23,7 +23,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import java.time.Duration;
 import java.util.Optional;
-import java.util.UUID;
+import java.lang.Long;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import uz.maniac4j.data.entity.HistoryOneItem;
@@ -118,7 +118,7 @@ public class HistoryOneItemView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<UUID> historyOneItemId = event.getRouteParameters().get(HISTORYONEITEM_ID).map(UUID::fromString);
+        Optional<Long> historyOneItemId = event.getRouteParameters().get(HISTORYONEITEM_ID).map(Long::valueOf);
         if (historyOneItemId.isPresent()) {
             Optional<HistoryOneItem> historyOneItemFromBackend = historyOneItemService.get(historyOneItemId.get());
             if (historyOneItemFromBackend.isPresent()) {

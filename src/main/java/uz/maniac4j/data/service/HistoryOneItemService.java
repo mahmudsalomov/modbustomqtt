@@ -1,7 +1,7 @@
 package uz.maniac4j.data.service;
 
 import java.util.Optional;
-import java.util.UUID;
+import java.lang.Long;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +18,7 @@ public class HistoryOneItemService {
         this.repository = repository;
     }
 
-    public Optional<HistoryOneItem> get(UUID id) {
+    public Optional<HistoryOneItem> get(Long id) {
         return repository.findById(id);
     }
 
@@ -26,7 +26,7 @@ public class HistoryOneItemService {
         return repository.save(entity);
     }
 
-    public void delete(UUID id) {
+    public void delete(Long id) {
         repository.deleteById(id);
     }
 

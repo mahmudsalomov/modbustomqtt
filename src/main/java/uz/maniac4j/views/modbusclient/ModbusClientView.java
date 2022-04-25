@@ -27,7 +27,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import java.util.Optional;
-import java.util.UUID;
+import java.lang.Long;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import uz.maniac4j.data.entity.ModbusClient;
@@ -155,7 +155,7 @@ public class ModbusClientView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<UUID> modbusClientId = event.getRouteParameters().get(MODBUSCLIENT_ID).map(UUID::fromString);
+        Optional<Long> modbusClientId = event.getRouteParameters().get(MODBUSCLIENT_ID).map(Long::valueOf);
         if (modbusClientId.isPresent()) {
             Optional<ModbusClient> modbusClientFromBackend = modbusClientService.get(modbusClientId.get());
             if (modbusClientFromBackend.isPresent()) {

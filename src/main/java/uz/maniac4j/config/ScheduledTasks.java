@@ -2,6 +2,7 @@ package uz.maniac4j.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import uz.maniac4j.data.entity.MqttClient;
 import uz.maniac4j.data.service.MqttClientService;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @Service
@@ -20,20 +23,13 @@ public class ScheduledTasks {
     private MqttClientService service;
     @Scheduled(fixedRate = 400)
     public void transform() throws InterruptedException {
-        List<MqttClient> list = service.list();
-        for (MqttClient mqttClient : list) {
-            if (mqttClient.getModbusClient().isEnable()&&mqttClient.isEnable()){
-                try {
-                    org.eclipse.paho.client.mqttv3.MqttClient client=new org.eclipse.paho.client.mqttv3.MqttClient("tcp://"+mqttClient.getIp()+":"+mqttClient.getPort(),mqttClient.getName());
-                    client.connect();
-                    new MqttMessage();
-                    client.publish(mqttClient.getTopic(),new MqttMessage(new ObjectMapper().writeValueAsBytes(mqttClient.getJson())));
+        service.publish();
+    }
 
-                } catch (MqttException | JsonProcessingException e) {
-                    e.printStackTrace();
-                }
-            }
 
-        }
+    public static String convertWithStream(Map<String, String> map) {
+        return map.keySet().stream()
+                .map(key -> key + "=" + map.get(key))
+                .collect(Collectors.joining(", ", "{", "}"));
     }
 }

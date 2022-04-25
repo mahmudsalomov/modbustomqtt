@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import uz.maniac4j.data.entity.ModbusClient;
 import uz.maniac4j.data.entity.ModbusItem;
 
-public interface ModbusItemRepository extends JpaRepository<ModbusItem, UUID> {
+public interface ModbusItemRepository extends JpaRepository<ModbusItem, Long> {
     Page<ModbusItem> findAllByModbusClient(Pageable pg, ModbusClient client);
 }

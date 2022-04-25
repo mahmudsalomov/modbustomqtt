@@ -3,6 +3,7 @@ package uz.maniac4j.data.entity;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import uz.maniac4j.data.enums.ErrorResponse;
 import uz.maniac4j.data.enums.RegisterType;
 import uz.maniac4j.data.enums.RegisterVarType;
 import uz.maniac4j.modbus.exceptions.ModbusStormException;
@@ -70,8 +71,8 @@ public class ModbusItem extends AbstractEntity {
 
     public String getValue() {
 
-        if (modbusClient==null) return "error";
-        if (!modbusClient.isEnable()) return "Client switch off";
+        if (modbusClient==null) return ErrorResponse.ERROR.name();
+        if (!modbusClient.isEnable()) return ErrorResponse.CLIENT_SWITCH_OFF.name();
         try {
             ModbusClient connect = modbusClient.Connect();
             int[] ints=new int[2];
@@ -101,7 +102,7 @@ public class ModbusItem extends AbstractEntity {
 
             return "0";
         }catch (Exception e){
-            return "error";
+            return ErrorResponse.ERROR.name();
         }
 
 

@@ -19,7 +19,7 @@ public class ModbusClientService {
         this.repository = repository;
     }
 
-    public Optional<ModbusClient> get(UUID id) {
+    public Optional<ModbusClient> get(Long id) {
         return repository.findById(id);
     }
 
@@ -27,7 +27,7 @@ public class ModbusClientService {
         return repository.save(entity);
     }
 
-    public void delete(UUID id) {
+    public void delete(Long id) {
         repository.deleteById(id);
     }
 

@@ -28,7 +28,9 @@ import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 
 import java.util.List;
 import java.util.Optional;
+import java.lang.Long;
 import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import uz.maniac4j.data.entity.ModbusClient;
@@ -166,7 +168,7 @@ public class ModbusItemView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<UUID> modbusItemId = event.getRouteParameters().get(MODBUSITEM_ID).map(UUID::fromString);
+        Optional<Long> modbusItemId = event.getRouteParameters().get(MODBUSITEM_ID).map(Long::valueOf);
         if (modbusItemId.isPresent()) {
             Optional<ModbusItem> modbusItemFromBackend = modbusItemService.get(modbusItemId.get());
             if (modbusItemFromBackend.isPresent()) {
@@ -193,7 +195,7 @@ public class ModbusItemView extends Div implements BeforeEnterObserver {
         register = new Select<>();
         register.setItems(RegisterType.names());
         register.setLabel("Register");
-        register.setPlaceholder("Select size");
+        register.setPlaceholder("Select register type");
 
         register.addValueChangeListener(this::changeType);
 
