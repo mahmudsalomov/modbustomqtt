@@ -69,10 +69,10 @@ public class MqttClientService {
 
 //                    new JSONPObject(mqttClient.getJson());
 
-//                    client.publish(mqttClient.getTopic(),new MqttMessage(new ObjectMapper().writeValueAsBytes(mqttClient.getJson())));
-                    client.publish(mqttClient.getTopic(),new MqttMessage(convertWithStream(getJson(mqttClient)).getBytes()));
-
-                } catch (MqttException
+                    client.publish(mqttClient.getTopic(),new MqttMessage(new ObjectMapper().writeValueAsBytes(mqttClient.getJson())));
+//                    client.publish(mqttClient.getTopic(),new MqttMessage(convertWithStream(getJson(mqttClient)).getBytes()));
+                    System.out.println("publish");
+                } catch (MqttException | JsonProcessingException
 //                         | JsonProcessingException
 //                        | JsonProcessingException
                         e

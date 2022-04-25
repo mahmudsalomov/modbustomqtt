@@ -97,11 +97,11 @@ public class MqttClient extends AbstractEntity {
     public Map<String,String> getJson(){
         Map<String,String> map=new HashMap<>();
         Set<ModbusItem> items = modbusClient.getItems();
-        System.out.println("SET");
-        System.out.println(modbusClient);
-        System.out.println(items.size());
+//        System.out.println("SET");
+//        System.out.println(modbusClient);
+//        System.out.println(items.size());
         for (ModbusItem item : items) {
-            System.out.println(item);
+//            System.out.println(item);
             map.put(item.getTagName(),item.getValue());
         }
         return map;
