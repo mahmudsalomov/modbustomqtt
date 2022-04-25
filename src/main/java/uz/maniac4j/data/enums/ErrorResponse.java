@@ -5,16 +5,16 @@ public enum ErrorResponse {
     CLIENT_SWITCH_OFF;
 
 
-    public static double check(String value){
+    public static Double check(String value){
         try {
             valueOf(value);
-            return 0;
+            return null;
         }catch (Exception e){
             try {
                 return Double.parseDouble(value);
 
             }catch (Exception g){
-                return 0;
+                return null;
             }
         }
     }

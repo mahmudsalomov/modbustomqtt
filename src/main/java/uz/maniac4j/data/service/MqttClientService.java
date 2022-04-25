@@ -100,7 +100,8 @@ public class MqttClientService {
         for (ModbusItem item : items) {
 //            System.out.println(item);
             String value = item.getValue();
-            itemLogRepository.save(ItemLog.builder().value(ErrorResponse.check(value)).modbusItem(item).build());
+            Double v = ErrorResponse.check(value);
+            if (v!=null) itemLogRepository.save(ItemLog.builder().value(v).modbusItem(item).build());
             map.put(item.getTagName(),value);
         }
         return new ObjectMapper().writeValueAsBytes(map);
