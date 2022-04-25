@@ -69,8 +69,8 @@ public class MqttClientService {
 
 //                    new JSONPObject(mqttClient.getJson());
 
-                    client.publish(mqttClient.getTopic(),new MqttMessage(new ObjectMapper().writeValueAsBytes(mqttClient.getJson())));
-//                    client.publish(mqttClient.getTopic(),new MqttMessage(convertWithStream(getJson(mqttClient)).getBytes()));
+//                    client.publish(mqttClient.getTopic(),new MqttMessage(new ObjectMapper().writeValueAsBytes(mqttClient.getJson())));
+                    client.publish(mqttClient.getTopic(),new MqttMessage(getJson(mqttClient)));
                     System.out.println("publish");
                 } catch (MqttException | JsonProcessingException
 //                         | JsonProcessingException
@@ -91,7 +91,7 @@ public class MqttClientService {
     }
 
 
-    public Map<String,String> getJson(MqttClient client){
+    public byte[] getJson(MqttClient client) throws JsonProcessingException {
         Map<String,String> map=new HashMap<>();
         Set<ModbusItem> items = client.getModbusClient().getItems();
 //        System.out.println("SET");
@@ -103,7 +103,7 @@ public class MqttClientService {
             itemLogRepository.save(ItemLog.builder().value(ErrorResponse.check(value)).modbusItem(item).build());
             map.put(item.getTagName(),value);
         }
-        return map;
+        return new ObjectMapper().writeValueAsBytes(map);
     }
 
 //    public static void main(String[] args) {
