@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class ScheduledTasks {
     @Autowired
     private MqttClientService service;
-    @Scheduled(fixedRate = 400)
+    @Scheduled(fixedDelay = 200)
     public void transform() throws InterruptedException {
         service.publish();
     }
