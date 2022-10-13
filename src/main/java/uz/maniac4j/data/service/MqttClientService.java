@@ -79,6 +79,7 @@ public class MqttClientService {
                         e
                 ) {
 //                    e.printStackTrace();
+                    System.out.println("publish failed");
                 }
             }
 
