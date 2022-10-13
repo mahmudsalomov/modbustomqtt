@@ -67,8 +67,9 @@ public class MqttClientService {
                 try {
                     var client=new org.eclipse.paho.client.mqttv3.MqttClient("tcp://"+mqttClient.getIp()+":"+mqttClient.getPort(),mqttClient.getName());
                     client.setTimeToWait(1000);
-                    if (failed) client.reconnect();
-                    else client.connect();
+//                    if (failed) client.reconnect();
+//                    else
+                        client.connect();
 //                    new MqttMessage();
 
 //                    new JSONPObject(mqttClient.getJson());
@@ -76,7 +77,7 @@ public class MqttClientService {
 //                    client.publish(mqttClient.getTopic(),new MqttMessage(new ObjectMapper().writeValueAsBytes(mqttClient.getJson())));
                     client.publish(mqttClient.getTopic(),new MqttMessage(getJson(mqttClient)));
                     System.out.println("publish");
-                    failed=false;
+//                    failed=false;
                 } catch (MqttException | JsonProcessingException
 //                         | JsonProcessingException
 //                        | JsonProcessingException
@@ -84,7 +85,7 @@ public class MqttClientService {
                 ) {
                     e.printStackTrace();
                     System.out.println("publish failed");
-                    failed=true;
+//                    failed=true;
                 }
             }
 
