@@ -64,6 +64,7 @@ public class MqttClientService {
             if (mqttClient.getModbusClient().isEnable()&&mqttClient.isEnable()){
                 try {
                     var client=new org.eclipse.paho.client.mqttv3.MqttClient("tcp://"+mqttClient.getIp()+":"+mqttClient.getPort(),mqttClient.getName());
+                    client.setTimeToWait(1000);
                     client.connect();
 //                    new MqttMessage();
 
