@@ -60,7 +60,11 @@ public class MqttClientService {
     }
 
 
-    public void publish() {
+    public void publish() throws InterruptedException {
+        if (!failed) {
+            Thread.sleep(5000);
+            failed=true;
+        }
         List<MqttClient> list = list();
         for (MqttClient mqttClient : list) {
             if (mqttClient.getModbusClient().isEnable()&&mqttClient.isEnable()){
