@@ -81,7 +81,7 @@ public class MqttClientService {
 //                    client.publish(mqttClient.getTopic(),new MqttMessage(new ObjectMapper().writeValueAsBytes(mqttClient.getJson())));
                     client.publish(mqttClient.getTopic(),new MqttMessage(getJson(mqttClient)));
                     System.out.println("publish");
-//                    failed=false;
+                    failed=false;
                 } catch (MqttException | JsonProcessingException
 //                         | JsonProcessingException
 //                        | JsonProcessingException
@@ -89,7 +89,7 @@ public class MqttClientService {
                 ) {
                     e.printStackTrace();
                     System.out.println("publish failed");
-//                    failed=true;
+                    failed=true;
                 }
             }
 
